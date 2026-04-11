@@ -1,0 +1,34 @@
+Instructions: 
+Configure the network as follows:
+1) You have been allocated subnet 192.168.1.0/24. 
+Subnet this into four subnets as follows 
+2) Subnet 1 for site 1
+3) Subnet 2 for the link between R1 and the Internet Router
+4) Subnet 3 for site 2
+5) Subnet 4 for the link between R2 and the Internet Router
+6) Configure the routers per the instructions in the diagram.
+7) Verify that PCs can access cisco.com and facebook.com using their browsers
+Implementation:
+Owned Domain: 192.168.1.0/24
+Subnet’d Domain: 192.168.1.0/26 (255.255.255.192)
+------------------------------------------------------------------
+Subet1: 192.168.1.0/26 - Site 1
+Network Address: 192.168.1.0
+Broadcast: 192.168.1.63
+VHB: 192.168.1.1 -> 192.168.1.62
+------------------------------------------------------------------
+Subnet2: 192.168.1.64/26 - R1/Internet Router
+Network Address: 192.168.1.64
+Broadcast: 192.168.1.127
+VHB: 192.168.1.65 -> 192.168.1.126
+------------------------------------------------------------------
+Subnet3: 192.168.1.128/26 - Site 2
+Network Address: 192.168.1.128
+Broadcast: 192.168.1.191
+VHB: 192.168.1.129 -> 192.168.1.190
+------------------------------------------------------------------
+Subnet4: 192.168.1.192/26 - R2/Internet Router
+Network Address: 192.168.1.192
+Broadcast: 192.168.1.255
+VHB: 192.168.1.193 -> 192.168.1.254
+
