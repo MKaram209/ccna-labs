@@ -1,0 +1,10 @@
+In a previous lab, 192.168.1.0/24 was broken up to support the subnets in this lab.
+Now you need to subnet the network to extend and conserve IP addresses:
+1) Break up 192.168.1.64/26 to support as many subnets as possible with 8 hosts per subnet. 
+2) Allocate the first new subnet to site 3. 
+3) Manually configure all devices in the subnet.
+- Router with last IP address in subnet
+- Hosts from first IP address
+4) Subnet the last new subnet you got from 192.168.1.64/26 with /30 masks 
+and then allocate the subnets to the serial links. Configure the routers appropriately.
+5) Verify that PCs can access cisco.com and facebook.com using their browsers
