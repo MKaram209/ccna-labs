@@ -1,0 +1,10 @@
+Problem:
+
+	Services that work pre - spanning tree initialization will fail, specifically for this case:
+	DHCP requests are failing from pc 1 and pc 2 because this version of spanning tree takes aprox. 30 seconds to converge meanwhile any requests made on the converging 	links fail
+
+
+
+Solution:	
+	
+	We set up the links we want initialized as fast as possible as PortFast ports which automatically sets them as forwarding 
