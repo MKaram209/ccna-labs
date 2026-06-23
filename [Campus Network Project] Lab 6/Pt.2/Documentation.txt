@@ -1,0 +1,83 @@
+CCNA Lab  Campus Network Configuration
+
+This lab covers a two-tier campus network with two core switches and three access switches. The goal was to get spanning tree optimized, etherchannel running between the cores, intervlan routing working, and remote management set up on the access switches.
+
+
+VLANs Used
+
+VLAN 1 for management, VLANs 10, 20, 30 for data, and VLAN 100 for servers. All VLANs were created manually on each switch since VTP was set to transparent mode to avoid any accidental propagation.
+
+
+CDP and LLDP
+
+CDP is on by default. LLDP needed to be enabled manually with "lldp run". Used show cdp neighbors and show lldp neighbors to confirm all links were up and connected to the right devices before touching anything else.
+
+
+Spanning Tree
+
+Ran show spanning-tree first to see the default state — which switch was root and which ports were forwarding or blocking. Then optimized it so Core1 is root for VLANs 1, 10, 30 and Core2 is root for VLANs 20, 100.
+
+On Core1:
+spanning-tree vlan 1,10,30 priority 24576
+
+On Core2:
+spanning-tree vlan 20,100 priority 24576
+
+Default priority is 32768 so 24576 is enough to win the election. Verified with show spanning-tree — Core1 showed this bridge is the root for VLANs 1, 10, 30 and Core2's MAC appeared as the Root ID for VLANs 20 and 100.
+
+
+EtherChannel
+
+Bundled Gi1/0/23 and Gi1/0/24 between Core1 and Core2 using LACP. Same config on both switches:
+
+interface GigabitEthernet1/0/23
+ switchport mode trunk
+ spanning-tree link-type point-to-point
+ channel-group 1 mode active
+
+interface GigabitEthernet1/0/24
+ switchport mode trunk
+ spanning-tree link-type point-to-point
+ channel-group 1 mode active
+
+interface Port-channel1
+ switchport mode trunk
+
+Verified with show etherchannel summary. Po1 came up as SU meaning the bundle is active and in use, and both physical ports showed P meaning they are participating in the bundle.
+
+
+InterVLAN Routing
+
+Both core switches are Layer 3 so routing between VLANs was done using SVIs. Core1 got .251 and Core2 got .252 on every VLAN.
+
+Core1 SVIs:
+interface Vlan1 — 10.1.1.251/24
+interface Vlan10 — 10.1.10.251/24
+interface Vlan20 — 10.1.20.251/24
+interface Vlan30 — 10.1.30.251/24
+interface Vlan100 — 10.1.100.251/24
+
+Core2 is the same with .252. Verified with show ip interface brief — all SVIs came up/up.
+
+
+Access Switch Management
+
+Access switches are Layer 2 only so they just need a management IP on VLAN 1 and a default gateway pointing to Core1. The reason a Layer 2 switch needs a default gateway even though it doesn't route is because the gateway is only used for the switch's own management traffic. The switch ARPs for the gateway's MAC, gets it back, and forwards its frames to that MAC without doing any routing itself.
+
+Access1:
+interface Vlan1
+ ip address 10.1.1.1 255.255.255.0
+ no shutdown
+
+ip default-gateway 10.1.1.251
+
+line vty 0 4
+ password cisco
+ login
+
+Access2 and Access3 are the same with IPs 10.1.1.2 and 10.1.1.3. Verified with show ip interface brief — Vlan1 up/up on all three.
+
+
+Things Worth Noting
+
+ip default-gateway only takes a single IP, no subnet mask. SVI interfaces can come up automatically if there is an active trunk port but it is good practice to add no shutdown explicitly. EtherChannel has to be configured on both sides before the bundle forms. VTP transparent mode means VLANs have to be created manually on each switch.
