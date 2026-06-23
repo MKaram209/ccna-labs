@@ -1,0 +1,15 @@
+1) Yes ( I see packets with CDP protocol)
+2) Yes
+3) 22:22:24 -> SharkS2
+   11:11:12 -> SharkS1
+   33:33:36 -> SharkS3
+
+4) S1: CISCO
+   S2: CISCO
+   S3: CISCO
+
+5) IOSvL2
+
+6) VTP Domain: S1-> sharks
+	       S2-> null
+	       S3-> null
