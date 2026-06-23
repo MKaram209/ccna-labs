@@ -1,0 +1,84 @@
+CCNA Lab  Basic Switch Configuration
+
+This was the initial setup done on all switches before getting into anything more advanced. Pretty straightforward but important to get right before building on top of it.
+
+
+Hostnames
+
+First thing was setting a hostname on each switch so it's easy to tell them apart in the terminal.
+
+hostname Core1
+hostname Core2
+hostname Access1
+hostname Access2
+hostname Access3
+
+
+Shutting Down Unused Interfaces
+
+Any port that wasn't being used was shut down. This is just good practice — open ports are a security risk and can cause unexpected behavior.
+
+interface range GigabitEthernet1/0/4-22
+ shutdown
+
+The exact range varies per switch depending on which ports are actually in use. The idea is anything not connected to another switch or a PC gets shut down.
+
+
+Passwords
+
+Enable secret was set for privileged mode access and a password was set on the VTY lines for telnet.
+
+enable password cisco
+
+line vty 0 4
+ password cisco
+ login
+
+Same config across all switches.
+
+
+VTP
+
+VTP was set to transparent mode on every switch. This means each switch manages its own VLAN database and won't accept or send VTP updates to others. The domain was set to ccna just to keep things consistent.
+
+vtp mode transparent
+vtp domain ccna
+
+
+VLANs
+
+Since VTP is transparent, VLANs had to be added manually on each switch.
+
+vlan 10
+vlan 20
+vlan 30
+vlan 100
+
+No names were assigned, just the VLAN IDs. Can verify with show vlan brief.
+
+
+Trunk Ports
+
+All links between switches were configured as trunks so they can carry traffic for all VLANs.
+
+interface GigabitEthernet1/0/1
+ switchport mode trunk
+
+Same was applied to any other port connecting to another switch. Verified with show interfaces trunk to confirm all VLANs were allowed and active.
+
+
+Access Ports
+
+Ports connecting to PCs were set as access ports and assigned to their respective VLAN. switchport nonegotiate was added to stop the port from trying to negotiate trunking with the end device.
+
+interface GigabitEthernet1/0/1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+
+The VLAN assignment depends on which VLAN that PC belongs to. Each access port gets assigned one VLAN only.
+
+
+Things Worth Noting
+
+VTP transparent means you are responsible for adding VLANs on every switch manually — they will not sync automatically. Trunk ports allow all VLANs by default so there is no need to specify them unless you want to restrict traffic. Access ports should always have nonegotiate set when connecting to end devices so they never accidentally form a trunk.
