@@ -1,0 +1,48 @@
+S1 - Password Recovery Notes (Cisco 3560, PNetLab)
+
+What this was: switch had no known enable password, needed to get back in
+without wiping the existing config (VLANs, interfaces etc).
+
+How it works: the config register decides whether the switch loads
+startup-config on boot. Set it to skip that file, boot in clean, pull
+the saved config back in manually, fix the password, save, then set
+the register back to normal so it's not permanently ignoring NVRAM.
+
+Steps:
+
+1. Reload the switch and send a break signal while it's still booting
+   (has to be before IOS finishes loading, so before you'd see "Press
+   RETURN to get started"). This drops you into ROMMON:
+   rommon 1 >
+
+   Note: only works over an actual console connection, not telnet/ssh.
+   Some switches also block break by default depending on current
+   config register value.
+
+2. Change the config register so it skips startup-config on boot:
+   rommon 1 > confreg 0x2142
+   rommon 2 > reset
+
+   0x2102 = normal boot, loads startup-config (default state)
+   0x2142 = boots but ignores startup-config in NVRAM (temp state)
+
+3. Switch reloads with a blank running-config, but the real config is
+   still sitting untouched in NVRAM. Pull it back in:
+   Switch> enable
+   Switch# copy startup-config running-config
+
+4. Reset the password:
+   Switch# configure terminal
+   Switch(config)# enable secret <newpassword>
+   Switch(config)# end
+
+5. Put the config register back to normal:
+   Switch(config)# config-register 0x2102
+
+6. Save and reload:
+   Switch# copy running-config startup-config
+   Switch# reload
+
+Main thing to remember: 0x2142 is temporary. If you reload without
+switching back to 0x2102, the switch just keeps ignoring its saved
+config every time it boots, which is an easy way to mess up the lab.
