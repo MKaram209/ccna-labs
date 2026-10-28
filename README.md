@@ -7,4 +7,4 @@ Initial Files: The original network topology or problem setup before any changes
 
 Implementation: My finalized configuration and solution after applying subnetting, routing, and required network adjustments
 
-This repository documents my progress in CCNA-level networking concepts, including subnetting, routing, and practical network design.
+This repository documents my progress in CCNA networking concepts, including subnetting, routing, and practical network design.
